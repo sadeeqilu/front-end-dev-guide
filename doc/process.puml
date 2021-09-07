@@ -1,0 +1,102 @@
+@startuml user portal api interaction
+
+actor user
+participant browser
+boundary portal as "portal-service-name"
+control api as "api-service-name" 
+
+user -> browser: enter/goto portal url
+browser -> portal : request portal url\n(with/out header.key and/or query.params)
+activate portal
+alt request.header key presence check
+else request.header has special key (i.e msisdn)
+    alt act based on the request.header.key value
+    else request.header.key value is in the expected format
+        alt query.param (i.e msisdn) check
+        else query.param has group-A key-value pair (auto)
+            portal->api : request otp\n(msisdn=<header_msisdn>, ...query.params)
+            activate api
+            portal<--api : respond with pin and rid
+            deactivate api
+            portal->api : request /otp\n(msisdn<header_msisdn>,..query.params,pin,rid)
+            activate api
+            portal<--api: respond with success/error
+            deactivate api
+            alt api response result
+            else success
+                browser<--portal: display pin.validation.success
+                browser->user: display validation success
+            else otherwise
+                browser<--portal : display pin.validation.failure
+                browser->user: display validation failure
+                deactivate portal
+            end
+        else query.param has group-B key-value pair (pin only)
+            portal->api : request otp\n(msisdn=<header_msisdn>, ...query.params)
+            ref over user,api :  Pin process          
+        else query.param has group-C key-value pair (interactive use)
+            ref over user,api :  Regular use
+        else query.param key-value is not in special groups or no query.param
+            ref over user,api :  Regular use
+        end
+    else request.header.key value is not in the expected format
+        ref over user,api : Regular use
+    end 
+else request.header has no special key
+    ref over user,api :Regular use
+end 
+
+
+== Regular use ==
+
+group Regular use
+    browser<--portal : respond with otp form
+    activate portal
+    user<--browser : display otp form
+    deactivate portal
+    user->browser : enter msisdn
+    browser->portal : submit form
+    activate portal
+    alt form validation
+    else exception at form fields
+        browser<--portal : display otp form with message
+
+    else expected fields are present and valid
+        portal->api : call /otp?msisdn=<msisdn>
+        activate api
+        api->user : send pin
+        portal<--api : respond with pin, rid
+        deactivate api
+        group pin process
+            browser<--portal : respond with pin form
+            deactivate portal
+            user<--browser : display pin form
+            user->browser : enter pin
+            browser->portal : submit pin form (msisdn,pin)
+            activate portal
+            alt pin validation
+            else exception in form processing
+                user<--browser : display pin form with message
+
+            else form has expected fields with valid values
+                portal->api : request /otp?msisdn=<msisdin>,pin=<pin>,rid=<rid>
+                portal<--api : respond with validation result (success/error)
+                alt pin validation result
+                else pin is valid
+                    browser<--portal : respond with success
+                    user<--browser : display validation success
+                else otherwise
+                    browser<--portal: respond with pin form with message
+                    user<--browser : display pin form
+                    deactivate portal  
+                end        
+            end
+        end
+    end
+
+end
+
+
+
+
+@enduml

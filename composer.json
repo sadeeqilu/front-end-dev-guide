@@ -1,0 +1,30 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "abcvyz/logger": "2.x-dev",
+        "abcvyz/config": "2.x-dev",
+        "abcvyz/yamlx": "2.x-dev",
+        "mustache/mustache": "dev-master",
+        "kint-php/kint": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    },
+    "minimum-stability" : "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@gitea:abcvyz/logger"
+        },
+        {
+            "type": "vcs",
+            "url": "git@gitea:abcvyz/config"
+        },
+        {
+            "type": "vcs",
+            "url": "git@gitea:abcvyz/yamlx"
+        }
+    ]
+}

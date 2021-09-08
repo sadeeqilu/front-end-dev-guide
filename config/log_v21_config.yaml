@@ -1,0 +1,64 @@
+defaults: 
+  name: &default_name ${name}
+  timeZone: &default_timeZone ${timezone}
+  captureSystemErrors: &default_captureSystemErrors ${captureSystemErrors}
+  include_caller: &default_include_caller true
+  
+  extra: &default_extra
+    instance: ${instance}
+
+  formats: 
+    standard: &default_format_standard
+      isColored : false
+      textFormat : &default_format_standard_textFormat "%datetime% %level_name%:%channel%\t%message%\t%context%\t%extra%\n"
+      datetimeFormat: &default_format_standard_datetimeFormat "Y-m-d\\TH:i:s.uO"
+      allowInlineLineBreaks: &default_format_standard_allowInLineBreaks true
+      ignoreEmptyContextAndExtra: &default_format_standard_ignoreEmptyContextAndExtra true
+      includeStacktraces: &default_format_standard_includeStacktraces true # Change to false in production
+      abcvyz_dumpTraceLevel: &default_format_standard_abcvyz_dumpTraceLevel 0 # Populate the extra field with debug_backtrace
+
+  common_handler: &default_common_handler
+    logLevel: null
+    bubble: true
+    format: 
+      <<: *default_format_standard
+    extra:
+      <<: *default_extra
+ 
+  stream_handler: &default_stream_handler
+    <<: *default_common_handler
+    filepath: null
+    extension: &default_file_handler_fileExtension ${extension}
+    filePermission: null
+    useLocking: false
+
+  channels: &default_channels 
+    console: &default_channel_console
+      <<: *default_stream_handler
+      filepath: php://stdout
+      logLevel: 700
+
+    normal_file: &default_channel_normal_file
+      <<: *default_stream_handler
+      filepath: ${path}${extension}
+      logLevel: 200
+
+    error_file: &default_channel_error_file
+      <<: *default_channel_normal_file
+      filepath: ${path}_error${extension}
+      logLevel: 300
+
+    debug_file: &default_channel_debug_file
+      <<: *default_channel_normal_file
+      logLevel: 700
+      filepath: ${path}_debug${extension}
+
+
+
+name: *default_name
+timeZone: *default_timeZone 
+captureSystemErrors: *default_captureSystemErrors
+include_caller: *default_include_caller
+channels: 
+  <<: *default_channels
+

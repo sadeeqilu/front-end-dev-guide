@@ -94,15 +94,15 @@ In the above example, you will see that `apache server` will host this applicati
 
 ### Doc folder files
 
-`process.puml` : The sequence diagram for the service process, find this document template in this repository.
+`process.puml` : The sequence diagram for the service process, find this document template in this repository. Most of the campaign cases are similar, so you can find a template within this repository for this.
 
-`install.md` : This file contains the steps involved in setting up and running the service on the production box.
+`install.md` : This file contains the steps involved in setting up and running the service on the production box. You can find a template in the respective folder within this directory.
 
-`servers.yaml` : Contains all the installations made on the production box.
+`servers.yaml` : Contains all the installations made on the production box, this is mostly filled by the sysop guy.
 
 ### Public folder 
 
-All css, javascript and image files of the service goes into this folder.
+All css, javascript and image folders of the service goes into this folder. 
 
 ### Views
 
